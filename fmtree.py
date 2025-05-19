@@ -5,7 +5,9 @@ EXCLUDED_ROOT_FILES = {
     "files.json",
     "fmtree.py",
     "index.html",
-    "favicon.png"
+    "favicon.png",
+    "manifest.json",
+    "service-worker.js"
 }
 
 def build_tree(path, rel_path=""):
