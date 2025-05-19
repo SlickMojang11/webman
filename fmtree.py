@@ -2,12 +2,10 @@ import os
 import json
 
 EXCLUDED_ROOT_FILES = {
-    "autocommit.ps1",
-    "tree.py",
+    "files.json",
     "fmtree.py",
     "index.html",
-    "favicon.png",
-    "fallback.html"
+    "favicon.png"
 }
 
 def build_tree(path, rel_path=""):
