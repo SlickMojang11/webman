@@ -11,6 +11,11 @@
       "type": "file",
       "name": "manifest.json",
       "path": "manifest.json"
+    },
+    {
+      "type": "file",
+      "name": "service-worker.js",
+      "path": "service-worker.js"
     }
   ]
 }
