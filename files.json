@@ -6,11 +6,6 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md"
-    },
-    {
-      "type": "file",
-      "name": "files.json",
-      "path": "files.json"
     }
   ]
 }
