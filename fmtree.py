@@ -7,7 +7,9 @@ EXCLUDED_ROOT_FILES = {
     "index.html",
     "favicon.png",
     "manifest.json",
-    "service-worker.js"
+    "service-worker.js",
+    "offline.html",
+    "offline.png"
 }
 
 def build_tree(path, rel_path=""):
