@@ -743,17 +743,35 @@ async function fetchTree() {
     
     splash.style.opacity = 0;
 
-const fontPromise = document.fonts.load('1em "Segoe UI"')
-  .then(fonts => {
-    if (!fonts || fonts.length === 0) {
-      throw new Error("Segoe UI did not load.");
+const fontPromise = new Promise((resolve, reject) => {
+  const testSpan = document.createElement("span");
+  testSpan.textContent = "A quick brown fox jumps";
+  testSpan.style.position = "absolute";
+  testSpan.style.visibility = "hidden";
+  testSpan.style.fontSize = "32px";
+  testSpan.style.fontFamily = "sans-serif";
+
+  document.body.appendChild(testSpan);
+  const baseWidth = testSpan.offsetWidth;
+
+  // Now test with Segoe UI
+  testSpan.style.fontFamily = '"Segoe UI", sans-serif';
+
+  requestAnimationFrame(() => {
+    const testWidth = testSpan.offsetWidth;
+    document.body.removeChild(testSpan);
+
+    if (testWidth !== baseWidth) {
+      console.log("Segoe UI is present.");
+      resolve();
+    } else {
+      console.warn("Segoe UI not rendered. Falling back.");
+      showStatus("Segoe UI font not available. Falling back to system font.");
+      reject(new Error("Segoe UI did not load."));
     }
-    console.log("Segoe UI loaded.");
-  })
-  .catch(err => {
-    console.error("Font loading failed:", err);
-    showStatus("Segoe UI font failed to load. Falling back to system font.");
   });
+});
+
 
 Promise.all([
   fontPromise,
@@ -764,10 +782,7 @@ Promise.all([
   if (!window.updateCheckStarted) {
     window.updateCheckStarted = true;
     setTimeout(() => setInterval(checkForUpdate, 20000), 5000);
-      }
-    
-
-    }, 500);
+  	  }, 500);
 
     showStatus("Files loaded successfully!");
   } catch (error) {
