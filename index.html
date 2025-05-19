@@ -775,21 +775,21 @@ const fontPromise = new Promise((resolve, reject) => {
 
 Promise.all([
   fontPromise,
-  new Promise(res => setTimeout(res, 500)) // allow time for fade
+  new Promise(res => setTimeout(res, 500))
 ]).then(() => {
   splash.style.display = 'none';
 
   if (!window.updateCheckStarted) {
     window.updateCheckStarted = true;
     setTimeout(() => setInterval(checkForUpdate, 20000), 5000);
-  	  }, 500);
-
-    showStatus("Files loaded successfully!");
-  } catch (error) {
-    showStatus("Error loading files: " + error.message);
-    console.error("Error fetching tree:", error);
   }
-}
+
+  showStatus("Files loaded successfully!");
+}).catch(error => {
+  showStatus("Error loading files: " + error.message);
+  console.error("Error fetching tree:", error);
+});
+
 	
 
 function getFileIcon(file) {
