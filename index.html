@@ -669,16 +669,6 @@ let deferredPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-
-  console.log("Install prompt is available.");
-
-  // Optional: show a custom status notice to the user
-  showStatus("You can install this site as an app from your browser menu.");
-  
-  // Optionally trigger prompt automatically (after delay):
-  // setTimeout(() => {
-  //   deferredPrompt.prompt();
-  // }, 5000);
 });
 
 function showStatus(message, isLoading = false) {
