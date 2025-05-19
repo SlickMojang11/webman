@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notebook-X</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="favicon.png" />
+  <style>
+    :root {
+      --bg: #f3f3f3;
+      --fg: #222;
+      --item: #fff;
+      --hover: #e0e0e0;
+      --accent: #0078d7;
+      --btn-bg: #ccc;
+      --selected: #d4e6f6;
+      --border: #ddd;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1e1e1e;
+        --fg: #ddd;
+        --item: #2b2b2b;
+        --hover: #3a3a3a;
+        --selected: #2c4356;
+        --btn-bg: #444;
+        --border: #444;
+      }
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
+    }
+    #splash img {
+      width: 96px;
+      height: 96px;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+	.error {
+		color: red;
+		background: rgba(255, 0, 0, 0.05);
+		border: 1px solid rgba(255, 0, 0, 0.2);
+		padding: 12px;
+		border-radius: 6px;
+		margin: 12px;
+		font-size: 14px;
+		font-family: "Segoe UI", sans-serif;
+	}
+
+    .window {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 80px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .window {
+        background: rgba(35,35,35,0.9);
+      }
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--item);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toolbar h1 {
+      font-size: 18px;
+      flex-grow: 1;
+      margin: 0;
+    }
+
+    .toolbar button {
+      background: var(--btn-bg);
+      color: var(--fg);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    
+    .toolbar button:hover {
+      opacity: 0.9;
+    }
+
+    .list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .path-nav {
+      padding: 8px 16px;
+      background: var(--item);
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    .path-segment {
+      cursor: pointer;
+      color: var(--accent);
+      padding: 0 4px;
+    }
+    
+    .path-segment:hover {
+      text-decoration: underline;
+    }
+    
+    .path-separator {
+      margin: 0 4px;
+      color: var(--fg);
+      opacity: 0.6;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--item);
+      border-radius: 6px;
+      cursor: pointer;
+      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+      border: 1px solid transparent;
+    }
+
+    @keyframes fadeIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .file-item:nth-child(even) {
+      background: var(--bg);
+    }
+
+    .file-item:hover {
+      background: var(--hover);
+    }
+    
+    .file-item.selected {
+      border: 1px solid var(--accent);
+      background: var(--selected);
+    }
+
+    .file-icon {
+      font-size: 20px;
+      margin-right: 12px;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .file-name {
+      flex-grow: 1;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      opacity: 0.6;
+    }
+    
+    .file-item:hover .file-actions {
+      opacity: 1;
+    }
+    
+    .file-action {
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .file-action:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .context-menu {
+      position: absolute;
+      background: var(--item);
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 9999;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      min-width: 160px;
+    }
+
+    .context-menu button {
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+    }
+    
+    .context-menu button .icon {
+      margin-right: 8px;
+      font-size: 16px;
+      opacity: 0.8;
+      width: 20px;
+      text-align: center;
+    }
+
+    .context-menu button:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .preview-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    .floating-window {
+      position: absolute;
+      width: 80vw;
+      height: 80vh;
+      background: var(--item);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      overflow: hidden;
+      resize: both;
+      display: flex;
+      flex-direction: column;
+      pointer-events: all;
+    }
+    
+    .floating-window.fullscreen {
+      width: 100vw !important;
+      height: 100vh !important;
+      top: 0 !important;
+      left: 0 !important;
+      border-radius: 0;
+    }
+
+    .title-bar {
+      background: var(--hover);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-bar .title {
+      font-weight: bold;
+      font-size: 14px;
+      flex-grow: 1;
+    }
+
+    .title-bar .buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .title-bar button {
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-size: 16px;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+    
+    .title-bar button:hover {
+      background: rgba(0,0,0,0.1);
+    }
+
+    .preview-body {
+      flex-grow: 1;
+      padding: 16px;
+      overflow: auto;
+    }
+    
+    .preview-body pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: "Consolas", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .preview-body img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    /* Markdown styling */
+    .markdown-content {
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    
+    .markdown-content h1, .markdown-content h2 {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.3em;
+    }
+    
+    .markdown-content code {
+      background: rgba(0,0,0,0.05);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-family: "Consolas", monospace;
+      font-size: 85%;
+    }
+    
+    .markdown-content pre code {
+      background: rgba(0,0,0,0.1);
+      display: block;
+      padding: 1em;
+      overflow-x: auto;
+      line-height: 1.45;
+    }
+    
+    .markdown-content blockquote {
+      border-left: 4px solid var(--accent);
+      margin-left: 0;
+      padding-left: 1em;
+      color: rgba(var(--fg), 0.8);
+    }
+    
+    .markdown-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+    }
+    
+    .markdown-content table th, .markdown-content table td {
+      border: 1px solid var(--border);
+      padding: 8px;
+    }
+    
+    .markdown-content table th {
+      background: rgba(0,0,0,0.05);
+    }
+
+    #taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px 10px;
+      background: var(--item);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      z-index: 1500;
+    }
+
+    .task-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 6px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .task-icon:hover::after {
+      content: attr(data-name);
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #fff;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .mobile-preview {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 2001;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mobile-preview .content {
+      background: var(--item);
+      width: 95vw;
+      height: 90vh;
+      padding: 16px;
+      overflow: auto;
+      border-radius: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .mobile-preview .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .mobile-preview .title {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .mobile-preview .close {
+      font-size: 24px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .mobile-preview .close:hover {
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .mobile-preview .body {
+      flex-grow: 1;
+      overflow: auto;
+    }
+    
+    /* Status indicator */
+    #status {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--item);
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 9000;
+    }
+    
+    #status.visible {
+      opacity: 1;
+    }
+    
+    /* Loading animation */
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      vertical-align: text-bottom;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* File type icons */
+    .file-icon[data-type="folder"] { color: #DAA520; }
+    .file-icon[data-type="md"] { color: #1E88E5; }
+    .file-icon[data-type="pdf"] { color: #E53935; }
+    .file-icon[data-type="txt"] { color: #757575; }
+    .file-icon[data-type="json"] { color: #FB8C00; }
+    .file-icon[data-type="js"] { color: #FDD835; }
+    .file-icon[data-type="html"] { color: #FF8A65; }
+    .file-icon[data-type="css"] { color: #42A5F5; }
+    .file-icon[data-type="py"] { color: #26A69A; }
+    .file-icon[data-type="image"] { color: #66BB6A; }
+    
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      opacity: 0.6;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .window {
+        margin: 0;
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+      }
+      
+      .file-actions {
+        opacity: 1;
+      }
+      
+      .floating-window {
+        width: 100vw;
+        height: 100vh;
+        top: 0 !important;
+        left: 0 !important;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="splash"><img src="favicon.png" alt="Loading..." /></div>
+
+  <div class="window">
+    <div class="toolbar">
+      <h1>Notebook-X</h1>
+      <button onclick="refreshFiles()">↻</button>
+      <button onclick="goUp()">↑</button>
+    </div>
+    <div class="path-nav" id="pathNav">
+      <span class="path-segment" onclick="goToRoot()">☁️</span>
+    </div>
+    <div class="list-view" id="listView"></div>
+  </div>
+
+  <div class="context-menu" id="contextMenu">
+    <button onclick="handlePreview()"><span class="icon">👁️</span>Preview</button>
+    <button onclick="handleDownload()"><span class="icon">📥</span>Download</button>
+  </div>
+
+  <div class="preview-container" id="previewContainer"></div>
+  <div id="taskbar" style="display: none;"></div>
+
+  <div class="mobile-preview" id="mobilePreview">
+    <div class="content">
+      <div class="header">
+        <div class="title" id="mobilePreviewTitle">Preview</div>
+        <div class="close" onclick="closeMobilePreview()">×</div>
+      </div>
+      <div class="body" id="mobilePreviewContent"></div>
+    </div>
+  </div>
+  
+  <div id="status"></div>
+
+<script>
+const listView = document.getElementById("listView");
+const pathNav = document.getElementById("pathNav");
+const splash = document.getElementById("splash");
+const contextMenu = document.getElementById("contextMenu");
+const previewContainer = document.getElementById("previewContainer");
+const mobilePreview = document.getElementById("mobilePreview");
+const mobilePreviewContent = document.getElementById("mobilePreviewContent");
+const mobilePreviewTitle = document.getElementById("mobilePreviewTitle");
+const taskbar = document.getElementById("taskbar");
+const statusEl = document.getElementById("status");
+
+let currentNode = null;
+let pathHistory = [];
+let selected = null;
+let previewId = 0;
+const windows = {};
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+const EXCLUDED_ROOT_FILES = [
+  "fmtree.py", "files.json", "index.html", "favicon.png", "tree.py", "autocommit.ps1"
+];
+
+const FILE_ICONS = {
+  folder: "📁",
+  md: "📝",
+  markdown: "📝",
+  pdf: "📕",
+  txt: "📄",
+  json: "🔧",
+  js: "📜",
+  html: "🌐",
+  css: "🎨",
+  py: "🐍",
+  jpg: "🖼️",
+  jpeg: "🖼️",
+  png: "🖼️",
+  gif: "🖼️",
+  svg: "🖼️",
+  default: "📄"
+};
+
+if ("serviceWorker" in navigator) {
+  const swCode = `
+    self.addEventListener("install", () => self.skipWaiting());
+    self.addEventListener("activate", () => console.log("SW active"));
+    self.addEventListener("fetch", () => {}); // Optional caching
+  `;
+  const blob = new Blob([swCode], { type: "application/javascript" });
+  const swURL = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL).then(() => {
+    console.log("Service Worker registered inline");
+  });
+}
+
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  console.log("Install prompt is available.");
+
+  // Optional: show a custom status notice to the user
+  showStatus("You can install this site as an app from your browser menu.");
+  
+  // Optionally trigger prompt automatically (after delay):
+  // setTimeout(() => {
+  //   deferredPrompt.prompt();
+  // }, 5000);
+});
+
+function showStatus(message, isLoading = false) {
+  statusEl.innerHTML = isLoading ? `<span class="loader"></span>${message}` : message;
+  statusEl.classList.add("visible");
+  setTimeout(() => {
+    statusEl.classList.remove("visible");
+  }, 3000);
+}
+
+// Function to automatically fetch and generate the file tree
+async function generateFileTree() {
+  showStatus("Generating file tree...", true);
+  
+  try {
+    // This would be a server-side operation in reality
+    // For this example, we'll just add a timestamp to show the concept
+    const timestamp = new Date().toISOString();
+    showStatus(`Tree generated at: ${timestamp}`);
+    
+    // In a real implementation, you would call your backend API to regenerate files.json
+    // For now, we'll just refresh what we have
+    await fetchTree();
+  } catch (error) {
+    showStatus("Failed to generate tree: " + error.message);
+  }
+}
+
+function refreshFiles() {
+  fetchTree();
+  showStatus("Refreshing files list…");
+}
+
+async function fetchTree() {
+  showStatus("Loading files...", true);
+  
+  try {
+    const res = await fetch("files.json?" + new Date().getTime());
+    if (!res.ok) {
+      throw new Error(`Failed to fetch: ${res.status}`);
+    }
+    
+    const tree = await res.json();
+    const raw = JSON.stringify(tree, Object.keys(tree).sort()); // stable stringification
+
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+    lastHash = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    initialLoadComplete = true;
+    try {
+      lastCommit = await fetchLatestCommit();
+    } catch (e) {
+      console.warn("Failed to fetch initial commit:", e);
+    }
+
+	
+	
+	if (!window.updateCheckStarted) {
+    window.updateCheckStarted = true;
+    setInterval(checkForUpdate, 20000);
+    }
+
+
+    currentNode = tree;
+    pathHistory = [];
+    renderFolder(tree);
+    updatePathNav();
+    
+    splash.style.opacity = 0;
+    setTimeout(() => {
+      splash.style.display = 'none';
+
+      // Start update checks only after splash is gone
+      if (!window.updateCheckStarted) {
+        window.updateCheckStarted = true;
+        setTimeout(() => setInterval(checkForUpdate, 20000), 5000); // or 60000 for 1-minute interval
+      }
+    }, 500);
+
+    showStatus("Files loaded successfully!");
+  } catch (error) {
+    showStatus("Error loading files: " + error.message);
+    console.error("Error fetching tree:", error);
+  }
+}
+	
+
+function getFileIcon(file) {
+  if (file.type === "folder") return FILE_ICONS.folder;
+  
+  const ext = file.name.split('.').pop().toLowerCase();
+  return FILE_ICONS[ext] || FILE_ICONS.default;
+}
+
+function getFileTypeClass(file) {
+  if (file.type === "folder") return "folder";
+
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if (["jpg", "jpeg", "png", "gif", "svg", "webp"].includes(ext)) {
+    return "image";
+  }
+
+  return ext; // returns 'py', 'html', 'css', etc.
+}
+
+
+function renderFolder(node) {
+  listView.innerHTML = "";
+  selected = null;
+  
+  const children = (node.children || []).filter(item => {
+    // Exclude .github/ folder
+    if (item.type === "folder" && item.name === ".github") return false;
+    // Exclude specific root files
+    if (node.name === "notebooks" && item.type === "file" && EXCLUDED_ROOT_FILES.includes(item.name)) return false;
+    return true;
+  });
+  
+  // Sort folders first, then files alphabetically
+  children.sort((a, b) => {
+    if (a.type === b.type) {
+      return a.name.localeCompare(b.name);
+    }
+    return a.type === "folder" ? -1 : 1;
+  });
+
+  if (children.length === 0) {
+    listView.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📂</div>
+        <h3>This folder is empty</h3>
+        <p>No files or folders to display</p>
+      </div>
+    `;
+    return;
+  }
+
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    const item = document.createElement("div");
+    item.className = "file-item";
+    item.setAttribute("data-index", i);
+    
+    const fileIcon = getFileIcon(child);
+    const fileTypeClass = getFileTypeClass(child);
+    
+    item.innerHTML = `
+      <div class="file-icon" data-type="${fileTypeClass}">${fileIcon}</div>
+      <div class="file-name">${child.name}</div>
+      <div class="file-actions">
+        ${child.type === "file" ? `
+          <div class="file-action" onclick="previewFile(event, ${i})">👁️</div>
+          <div class="file-action" onclick="downloadFile(event, ${i})">📥</div>
+        ` : ''}
+      </div>
+    `;
+
+    item.onclick = (e) => {
+      // Clear previous selection
+      document.querySelectorAll('.file-item.selected').forEach(el => 
+        el.classList.remove('selected')
+      );
+      
+      // Set new selection
+      item.classList.add('selected');
+      selected = child;
+      
+      // Handle single click to open
+      if (child.type === "folder") {
+        pathHistory.push(currentNode);
+        currentNode = child;
+        renderFolder(child);
+        updatePathNav();
+      } else {
+        // For files, open preview immediately (single click behavior)
+        if (!e.target.closest('.file-action')) {
+          handlePreview();
+        }
+      }
+    };
+    
+    item.oncontextmenu = e => {
+      e.preventDefault();
+      // Clear previous selection
+      document.querySelectorAll('.file-item.selected').forEach(el => 
+        el.classList.remove('selected')
+      );
+      
+      // Set new selection
+      item.classList.add('selected');
+      selected = child;
+      showContextMenu(e.pageX, e.pageY);
+    };
+
+    listView.appendChild(item);
+    
+    // Add a small delay between each item animation
+    item.style.animationDelay = `${i * 30}ms`;
+  }
+}
+
+function startDrag(e, id) {
+  const el = windows[id];
+  if (!el) return;
+
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const startLeft = parseInt(el.style.left, 10) || 0;
+  const startTop = parseInt(el.style.top, 10) || 0;
+
+  function onMouseMove(ev) {
+    el.style.left = startLeft + (ev.clientX - startX) + "px";
+    el.style.top = startTop + (ev.clientY - startY) + "px";
+  }
+
+  function onMouseUp() {
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+  }
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp);
+}
+
+function updatePathNav() {
+  pathNav.innerHTML = `<span class="path-segment" onclick="goToRoot()">☁️</span>`;
+  
+  let currentPath = [];
+  for (let i = 0; i < pathHistory.length; i++) {
+    const node = pathHistory[i];
+    currentPath.push(node);
+    pathNav.innerHTML += `<span class="path-separator">/</span>
+                          <span class="path-segment" onclick="goToPath(${i})">${node.name}</span>`;
+  }
+  
+  if (currentNode && currentNode !== pathHistory[pathHistory.length - 1]) {
+    pathNav.innerHTML += `<span class="path-separator">/</span>
+                          <span class="path-segment">${currentNode.name}</span>`;
+  }
+}
+
+function goToRoot() {
+  fetchTree(); // Refresh and go to root
+}
+
+function goToPath(index) {
+  currentNode = pathHistory[index];
+  pathHistory = pathHistory.slice(0, index);
+  renderFolder(currentNode);
+  updatePathNav();
+}
+
+function goUp() {
+  if (pathHistory.length > 0) {
+    currentNode = pathHistory.pop();
+    renderFolder(currentNode);
+    updatePathNav();
+  }
+}
+
+function previewFile(e, index) {
+  e.stopPropagation();
+  const items = document.querySelectorAll('.file-item');
+  if (index >= 0 && index < items.length) {
+    items[index].click();
+    handlePreview();
+  }
+}
+
+function downloadFile(e, index) {
+  e.stopPropagation();
+  const items = document.querySelectorAll('.file-item');
+  if (index >= 0 && index < items.length) {
+    items[index].click();
+    handleDownload();
+  }
+}
+
+function closeWindow(id) {
+  const win = windows[id];
+  if (win) {
+    win.remove();
+    delete windows[id];
+    updateTaskbar();
+  }
+}
+
+function minimizeWindow(id) {
+  const win = windows[id];
+  if (win) {
+    win.style.display = "none";
+    updateTaskbar();
+  }
+}
+
+function updateTaskbar() {
+  const minimized = Object.entries(windows).filter(([_, el]) => el.style.display === "none");
+  
+  if (minimized.length === 0) {
+    taskbar.style.display = "none";
+    taskbar.innerHTML = "";
+    return;
+  }
+
+  taskbar.style.display = "flex";
+  taskbar.innerHTML = "";
+
+  for (const [id, el] of minimized) {
+    const name = el.querySelector(".title")?.textContent || "File";
+
+    const icon = document.createElement("div");
+    icon.className = "task-icon";
+    icon.dataset.name = name;
+    icon.textContent = "📄";
+    icon.onclick = () => {
+      el.style.display = "block";
+      updateTaskbar();
+    };
+
+    taskbar.appendChild(icon);
+  }
+}
+
+function toggleFullscreen(id, forceFull = false) {
+  const w = windows[id];
+  if (!w) return;
+
+  const isFullscreen = w.classList.contains("fullscreen");
+
+  if (forceFull && !isFullscreen) {
+    w.classList.add("fullscreen");
+    return;
+  }
+
+  if (isFullscreen) {
+    w.classList.remove("fullscreen");
+    w.style.width = "80vw";
+    w.style.height = "80vh";
+    w.style.top = "100px";
+    w.style.left = "100px";
+  } else {
+    w.classList.add("fullscreen");
+    w.style.top = "0";
+    w.style.left = "0";
+    w.style.width = "100vw";
+    w.style.height = "100vh";
+  }
+}
+ 
+
+function showContextMenu(x, y) {
+  contextMenu.style.top = y + 'px';
+  contextMenu.style.left = x + 'px';
+  contextMenu.style.display = 'flex';
+}
+
+function handlePreview() {
+  if (selected && selected.type === "file") {
+    isMobile
+      ? openMobilePreview(selected.path, selected.name)
+      : openPreview(selected.path, selected.name);
+  }
+  contextMenu.style.display = 'none';
+}
+
+function handleDownload() {
+  if (selected && selected.type === "file") {
+    const a = document.createElement("a");
+    a.href = selected.path;
+    a.download = selected.name;
+    a.click();
+    showStatus(`Downloading: ${selected.name}`);
+  }
+  contextMenu.style.display = 'none';
+}
+
+function openMobilePreview(path, filename) {
+  mobilePreviewTitle.textContent = filename;
+  fetchFileContent(path, filename, mobilePreviewContent);
+  mobilePreview.style.display = "flex";
+}
+
+function closeMobilePreview() {
+  mobilePreview.style.display = "none";
+  mobilePreviewContent.innerHTML = "";
+}
+
+function openPreview(path, filename) {
+  const id = 'preview-' + (++previewId);
+  const win = document.createElement("div");
+  win.className = "floating-window";
+  win.style.top = `${100 + previewId * 10}px`;
+  win.style.left = `${100 + previewId * 10}px`;
+  win.dataset.id = id;
+  
+  const ext = filename.split('.').pop().toLowerCase();
+  const isFullScreen = ext === 'md' || ext === 'markdown' || ext === 'pdf';
+
+  win.innerHTML = `
+    <div class="title-bar" onmousedown="startDrag(event, '${id}')">
+      <div class="title">${filename}</div>
+      <div class="buttons">
+        <button onclick="minimizeWindow('${id}')">🗕</button>
+        <button onclick="toggleFullscreen('${id}')">🗖</button>
+        <button onclick="closeWindow('${id}')">✖</button>
+      </div>
+    </div>
+    <div class="preview-body" id="${id}-body">Loading...</div>
+  `;
+  previewContainer.appendChild(win);
+  windows[id] = win;
+
+  const container = document.getElementById(id + "-body");
+  fetchFileContent(path, filename, container);
+  updateTaskbar();
+  
+  // Auto fullscreen for markdown and PDF
+  if (isFullScreen) {
+    setTimeout(() => toggleFullscreen(id, true), 100);
+  }
+}
+
+async function fetchFileContent(path, filename, container) {
+  const ext = filename.split('.').pop().toLowerCase();
+  
+  container.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;"><span class="loader"></span> Loading...</div>';
+
+  try {
+    if (/.(png|jpe?g|gif|bmp|webp)$/i.test(filename)) {
+      container.innerHTML = `<img src="${path}" style="max-width:100%;height:auto;display:block;margin:auto;" alt="${filename}" />`;
+    } else if (/.(mp3|wav|ogg)$/i.test(filename)) {
+      container.innerHTML = `<audio controls src="${path}" style="width:100%"></audio>`;
+    } else if (ext === 'pdf') {
+      container.innerHTML = `<iframe src="${path}" style="width:100%;height:100%;border:none;"></iframe>`;
+    } else if (ext === 'md' || ext === 'markdown') {
+      try {
+        const response = await fetch(path);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        container.innerHTML = `<div class="markdown-content">${markdownToHTML(text)}</div>`;
+      } catch (error) {
+        container.innerHTML = `<div class="error">Error loading markdown: ${error.message}</div>`;
+      }
+    } else {
+      try {
+        const response = await fetch(path);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        container.innerHTML = `<pre>${text}</pre>`;
+      } catch (error) {
+        container.innerHTML = `<div class="error">Error loading file: ${error.message}</div>`;
+      }
+    }
+  } catch (error) {
+    container.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+  }
+
+
+}
+
+document.addEventListener("click", (e) => {
+  const isItem = e.target.closest(".file-item");
+  const isContext = e.target.closest(".context-menu");
+  if (!isItem && !isContext) {
+    document.querySelectorAll('.file-item.selected').forEach(el => el.classList.remove('selected'));
+    selected = null;
+    contextMenu.style.display = "none";
+  }
+});
+
+const manifest = {
+  name: "Notebook-X",
+  short_name: "Notebook-X",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#1e1e1e",
+  theme_color: "#1e1e1e",
+  icons: [
+    {
+      src: "favicon.png",
+      sizes: "192x192",
+      type: "image/png"
+    }
+  ]
+};
+
+const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+const manifestURL = URL.createObjectURL(blob);
+const link = document.createElement("link");
+link.rel = "manifest";
+link.href = manifestURL;
+document.head.appendChild(link);
+
+window.addEventListener("DOMContentLoaded", fetchTree);
+
+
+				     
+</script>
+<script>
+  function markdownToHTML(text) {
+    return marked.parse(text);
+  }
+  
+let lastCommit = null;	
+let lastHash = null;
+let initialLoadComplete = false;
+async function fetchLatestCommit() {
+  try {
+    const res = await fetch("https://api.github.com/repos/slickmojang11/notebooks/commits?per_page=1");
+
+    if (!res.ok) {
+      throw new Error(`GitHub API returned ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (!Array.isArray(data) || !data[0]?.sha) {
+      throw new Error("Unexpected response format from GitHub API");
+    }
+
+    return data[0].sha;
+
+  } catch (err) {
+	  showStatus("Could not fetch latest commit: " + err.message);
+      console.error("Could not fetch latest commit:", err);
+    return null;
+  }
+}
+
+async function checkForUpdate() {
+  if (!initialLoadComplete) return;
+
+  const newCommit = await fetchLatestCommit();
+  if (!newCommit) return;
+  
+  console.log("lastCommit:", lastCommit);
+  console.log("newCommit:", newCommit);
+
+  if (lastCommit && newCommit !== lastCommit) {
+    const notice = document.getElementById("updateNotice");
+    if (notice && notice.style.display !== "flex") {
+      notice.style.display = "flex";
+    }
+
+  }
+}	
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<div id="updateNotice" style="display: none !important; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--item); color: var(--fg); padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 9999; align-items: center; gap: 12px;">
+  <span>Update detected. Refresh now to apply changes.</span>
+  <button onclick="location.reload()" style="background:var(--accent);color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">Refresh</button>
+  <button onclick="document.getElementById('updateNotice').style.display='none'" style="background:none;border:none;color:var(--fg);font-size:18px;cursor:pointer;">×</button>
+	</div>
+</body>
+</html>

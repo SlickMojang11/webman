@@ -1,0 +1,41 @@
+{
+  "type": "folder",
+  "name": "notebooks",
+  "children": [
+    {
+      "type": "file",
+      "name": "BEGINNERS.md",
+      "path": "BEGINNERS.md"
+    },
+    {
+      "type": "file",
+      "name": "Creative Writings for School Magazine.docx",
+      "path": "Creative Writings for School Magazine.docx"
+    },
+    {
+      "type": "file",
+      "name": "NCERT-PDFs.md",
+      "path": "NCERT-PDFs.md"
+    },
+    {
+      "type": "file",
+      "name": "PROMPTS.md",
+      "path": "PROMPTS.md"
+    },
+    {
+      "type": "file",
+      "name": "README.md",
+      "path": "README.md"
+    },
+    {
+      "type": "file",
+      "name": "SUMMER-VACATION.md",
+      "path": "SUMMER-VACATION.md"
+    },
+    {
+      "type": "file",
+      "name": "files.json",
+      "path": "files.json"
+    }
+  ]
+}
