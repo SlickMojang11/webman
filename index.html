@@ -742,14 +742,31 @@ async function fetchTree() {
     updatePathNav();
     
     splash.style.opacity = 0;
-    setTimeout(() => {
-      splash.style.display = 'none';
 
-      // Start update checks only after splash is gone
-      if (!window.updateCheckStarted) {
-        window.updateCheckStarted = true;
-        setTimeout(() => setInterval(checkForUpdate, 20000), 5000); // or 60000 for 1-minute interval
+const fontPromise = document.fonts.load('1em "Segoe UI"')
+  .then(fonts => {
+    if (!fonts || fonts.length === 0) {
+      throw new Error("Segoe UI did not load.");
+    }
+    console.log("Segoe UI loaded.");
+  })
+  .catch(err => {
+    console.error("Font loading failed:", err);
+    showStatus("Segoe UI font failed to load. Falling back to system font.");
+  });
+
+Promise.all([
+  fontPromise,
+  new Promise(res => setTimeout(res, 500)) // allow time for fade
+]).then(() => {
+  splash.style.display = 'none';
+
+  if (!window.updateCheckStarted) {
+    window.updateCheckStarted = true;
+    setTimeout(() => setInterval(checkForUpdate, 20000), 5000);
       }
+    
+
     }, 500);
 
     showStatus("Files loaded successfully!");
