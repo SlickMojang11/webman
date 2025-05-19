@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>WebMan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e1e1e">
   <link rel="icon" href="favicon.png" />
   <style>
     :root {
@@ -655,15 +657,10 @@ const FILE_ICONS = {
 };
 
 if ("serviceWorker" in navigator) {
-  const swCode = `
-    self.addEventListener("install", () => self.skipWaiting());
-    self.addEventListener("activate", () => console.log("SW active"));
-    self.addEventListener("fetch", () => {}); // Optional caching
-  `;
-  const blob = new Blob([swCode], { type: "application/javascript" });
-  const swURL = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swURL).then(() => {
-    console.log("Service Worker registered inline");
+  navigator.serviceWorker.register("service-worker.js").then(() => {
+    console.log("Service Worker registered");
+  }).catch(err => {
+    console.error("SW registration failed:", err);
   });
 }
 
