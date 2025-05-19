@@ -1221,9 +1221,6 @@ async function checkForUpdate() {
   const newCommit = await fetchLatestCommit();
   if (!newCommit) return;
   
-  console.log("lastCommit:", lastCommit);
-  console.log("newCommit:", newCommit);
-
   if (lastCommit && newCommit !== lastCommit) {
     const notice = document.getElementById("updateNotice");
     if (notice && notice.style.display !== "flex") {
