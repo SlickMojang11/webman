@@ -6,16 +6,6 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md"
-    },
-    {
-      "type": "file",
-      "name": "offline.html",
-      "path": "offline.html"
-    },
-    {
-      "type": "file",
-      "name": "offline.png",
-      "path": "offline.png"
     }
   ]
 }
