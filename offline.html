@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Offline</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #1e1e1e;
+      color: #fff;
+      font-family: "Segoe UI", Inter, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    img {
+      width: 160px;
+      height: 160px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 24px;
+      max-width: 320px;
+    }
+
+    button {
+      background: #3a3a3a;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <img src="offline.png" alt="Offline" />
+  <h1>Can't connect</h1>
+  <p>Looks like you are not connected to internet. Files cannot be loaded without an internet connectivity.</p>
+  <button onclick="location.reload()">Refresh</button>
+</body>
+</html>
