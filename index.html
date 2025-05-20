@@ -740,8 +740,11 @@ async function fetchTree() {
     pathHistory = [];
     renderFolder(tree);
     updatePathNav();
-    splash.style.display = 'none'
     splash.style.opacity = 0;
+setTimeout(() => {
+  splash.style.display = 'none';
+}, 600); // Match the CSS transition duration
+
 
 const fontPromise = new Promise((resolve, reject) => {
   const testSpan = document.createElement("span");
