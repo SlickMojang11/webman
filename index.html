@@ -782,7 +782,7 @@ Promise.all([
   if (!window.updateCheckStarted) {
     window.updateCheckStarted = true;
     setTimeout(() => setInterval(checkForUpdate, 20000), 5000);
-  	  }, 500);
+  	  });
 
     showStatus("Files loaded successfully!");
   } catch (error) {
