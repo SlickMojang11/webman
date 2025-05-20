@@ -734,33 +734,34 @@ async function fetchTree() {
     renderFolder(tree);
     updatePathNav();
 
-    const fontPromise = new Promise((resolve, reject) => {
-      const testSpan = document.createElement("span");
-      testSpan.textContent = "A quick brown fox jumps";
-      testSpan.style.position = "absolute";
-      testSpan.style.visibility = "hidden";
-      testSpan.style.fontSize = "32px";
-      testSpan.style.fontFamily = "sans-serif";
+    const fontPromise = new Promise((resolve) => {
+  const testSpan = document.createElement("span");
+  testSpan.textContent = "A quick brown fox jumps";
+  testSpan.style.position = "absolute";
+  testSpan.style.visibility = "hidden";
+  testSpan.style.fontSize = "32px";
+  testSpan.style.fontFamily = "sans-serif";
 
-      document.body.appendChild(testSpan);
-      const baseWidth = testSpan.offsetWidth;
+  document.body.appendChild(testSpan);
+  const baseWidth = testSpan.offsetWidth;
 
-      testSpan.style.fontFamily = '"Segoe UI", sans-serif';
+  testSpan.style.fontFamily = '"Segoe UI", sans-serif';
 
-      requestAnimationFrame(() => {
-        const testWidth = testSpan.offsetWidth;
-        document.body.removeChild(testSpan);
+  requestAnimationFrame(() => {
+    const testWidth = testSpan.offsetWidth;
+    document.body.removeChild(testSpan);
 
-        if (testWidth !== baseWidth) {
-          console.log("Segoe UI is present.");
-          resolve();
-        } else {
-          console.warn("Segoe UI not rendered. Falling back.");
-          showStatus("Segoe UI font not available. Falling back to system font.");
-          reject(new Error("Segoe UI did not load."));
-        }
-      });
-    });
+    if (testWidth !== baseWidth) {
+      console.log("Segoe UI is present.");
+    } else {
+      console.warn("Segoe UI not rendered. Falling back.");
+      showStatus("Segoe UI font not available. Falling back to system font.");
+    }
+
+    resolve(); // Always resolve — don't block the splash or file loading
+  });
+});
+
 
     Promise.all([
       fontPromise,
