@@ -709,92 +709,85 @@ function refreshFiles() {
 
 async function fetchTree() {
   showStatus("Loading files...", true);
-  
+
   try {
     const res = await fetch("files.json?" + new Date().getTime());
     if (!res.ok) {
       throw new Error(`Failed to fetch: ${res.status}`);
     }
-    
+
     const tree = await res.json();
-    const raw = JSON.stringify(tree, Object.keys(tree).sort()); // stable stringification
+    const raw = JSON.stringify(tree, Object.keys(tree).sort());
 
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
     lastHash = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
     initialLoadComplete = true;
+
     try {
       lastCommit = await fetchLatestCommit();
     } catch (e) {
       console.warn("Failed to fetch initial commit:", e);
     }
 
-	
-	
-	if (!window.updateCheckStarted) {
-    window.updateCheckStarted = true;
-    setInterval(checkForUpdate, 20000);
-    }
-
-
     currentNode = tree;
     pathHistory = [];
     renderFolder(tree);
     updatePathNav();
-    splash.style.opacity = 0;
-setTimeout(() => {
-  splash.style.display = 'none';
-}, 600); // Match the CSS transition duration
 
+    const fontPromise = new Promise((resolve, reject) => {
+      const testSpan = document.createElement("span");
+      testSpan.textContent = "A quick brown fox jumps";
+      testSpan.style.position = "absolute";
+      testSpan.style.visibility = "hidden";
+      testSpan.style.fontSize = "32px";
+      testSpan.style.fontFamily = "sans-serif";
 
-const fontPromise = new Promise((resolve, reject) => {
-  const testSpan = document.createElement("span");
-  testSpan.textContent = "A quick brown fox jumps";
-  testSpan.style.position = "absolute";
-  testSpan.style.visibility = "hidden";
-  testSpan.style.fontSize = "32px";
-  testSpan.style.fontFamily = "sans-serif";
+      document.body.appendChild(testSpan);
+      const baseWidth = testSpan.offsetWidth;
 
-  document.body.appendChild(testSpan);
-  const baseWidth = testSpan.offsetWidth;
+      testSpan.style.fontFamily = '"Segoe UI", sans-serif';
 
-  // Now test with Segoe UI
-  testSpan.style.fontFamily = '"Segoe UI", sans-serif';
+      requestAnimationFrame(() => {
+        const testWidth = testSpan.offsetWidth;
+        document.body.removeChild(testSpan);
 
-  requestAnimationFrame(() => {
-    const testWidth = testSpan.offsetWidth;
-    document.body.removeChild(testSpan);
+        if (testWidth !== baseWidth) {
+          console.log("Segoe UI is present.");
+          resolve();
+        } else {
+          console.warn("Segoe UI not rendered. Falling back.");
+          showStatus("Segoe UI font not available. Falling back to system font.");
+          reject(new Error("Segoe UI did not load."));
+        }
+      });
+    });
 
-    if (testWidth !== baseWidth) {
-      console.log("Segoe UI is present.");
-      resolve();
-    } else {
-      console.warn("Segoe UI not rendered. Falling back.");
-      showStatus("Segoe UI font not available. Falling back to system font.");
-      reject(new Error("Segoe UI did not load."));
-    }
-  });
-});
+    Promise.all([
+      fontPromise,
+      new Promise(res => setTimeout(res, 500))
+    ]).then(() => {
+      splash.style.opacity = 0;
+      setTimeout(() => {
+        splash.style.display = 'none';
+      }, 600);
 
+      if (!window.updateCheckStarted) {
+        window.updateCheckStarted = true;
+        setTimeout(() => setInterval(checkForUpdate, 20000), 5000);
+      }
 
-Promise.all([
-  fontPromise,
-  new Promise(res => setTimeout(res, 500))
-]).then(() => {
-  splash.style.opacity = 0;
-  setTimeout(() => {
-    splash.style.display = 'none';
-  }, 600);
+      showStatus("Files loaded successfully!");
+    }).catch(error => {
+      showStatus("Error loading files: " + error.message);
+      console.error("Error fetching tree:", error);
+    });
 
-  if (!window.updateCheckStarted) {
-    window.updateCheckStarted = true;
-    setTimeout(() => setInterval(checkForUpdate, 20000), 5000);
+  } catch (error) {
+    showStatus("Failed to generate tree: " + error.message);
+    console.error(error);
   }
+}
 
-  showStatus("Files loaded successfully!");
-}).catch(error => {
-  showStatus("Error loading files: " + error.message);
-  console.error("Error fetching tree:", error);
-});
 
 	
 
