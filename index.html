@@ -7,28 +7,37 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e1e1e">
   <link rel="icon" href="favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #f3f3f3;
-      --fg: #222;
-      --item: #fff;
-      --hover: #e0e0e0;
-      --accent: #0078d7;
-      --btn-bg: #ccc;
-      --selected: #d4e6f6;
-      --border: #ddd;
-    }
+  --bg: #fefefe;
+  --fg: #202124;
+  --item: #ffffff;
+  --hover: #f1f3f4;
+  --accent: #1a73e8;
+  --btn-bg: #e8f0fe;
+  --btn-hover: #d2e3fc;
+  --selected: #e8f0fe;
+  --border: #dadce0;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px rgba(60,64,67,0.15);
+}
+
     @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1e1e1e;
-        --fg: #ddd;
-        --item: #2b2b2b;
-        --hover: #3a3a3a;
-        --selected: #2c4356;
-        --btn-bg: #444;
-        --border: #444;
-      }
-    }
+  :root {
+    --bg: #202124;
+    --fg: #e8eaed;
+    --item: #303134;
+    --hover: #3c4043;
+    --selected: #3d5afe33;
+    --btn-bg: #3c4043;
+    --btn-hover: #5f6368;
+    --border: #5f6368;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2);
+  }
+}
+
     body {
       margin: 0;
       font-family: "Roboto", sans-serif;
@@ -63,7 +72,7 @@
 		border-radius: 6px;
 		margin: 12px;
 		font-size: 14px;
-		font-family: "Segoe UI", sans-serif;
+		font-family: "Roboto", sans-serif;
 	}
 
     .window {
