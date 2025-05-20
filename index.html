@@ -1053,24 +1053,24 @@ function toggleFullscreen(id, forceFull = false) {
   if (isFullscreen) {
     w.classList.remove("fullscreen");
 
-    // Restore to default size
+    // ✅ Remove mobile override styles
+    w.style.removeProperty("top");
+    w.style.removeProperty("left");
+
+    // ✅ Then set fallback desktop positions
+    w.style.top = "100px";
+    w.style.left = "100px";
     w.style.width = "80vw";
     w.style.height = "80vh";
-
-    // ✅ Always reset top/left to prevent it getting stuck
-    w.style.left = "100px";
-    w.style.top = "100px";
-
   } else {
     w.classList.add("fullscreen");
-
-    // Ensure top/left set so !important styles are overridden
-    w.style.top = "0px";
-    w.style.left = "0px";
+    w.style.top = "0";
+    w.style.left = "0";
     w.style.width = "100vw";
     w.style.height = "100vh";
   }
 }
+
 
 function showContextMenu(x, y) {
   contextMenu.style.top = y + 'px';
