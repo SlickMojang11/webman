@@ -1052,26 +1052,25 @@ function toggleFullscreen(id, forceFull = false) {
 
   if (isFullscreen) {
     w.classList.remove("fullscreen");
-    
-    // 🔧 Restore to default centered size and position
+
+    // Restore to default size
     w.style.width = "80vw";
     w.style.height = "80vh";
-    
-    // Only re-center if window is currently at top-left
-    const currentLeft = parseInt(w.style.left, 10);
-    const currentTop = parseInt(w.style.top, 10);
-    if (!currentLeft || currentLeft < 50) w.style.left = "100px";
-    if (!currentTop || currentTop < 50) w.style.top = "100px";
+
+    // ✅ Always reset top/left to prevent it getting stuck
+    w.style.left = "100px";
+    w.style.top = "100px";
+
   } else {
     w.classList.add("fullscreen");
-    w.style.top = "0";
-    w.style.left = "0";
+
+    // Ensure top/left set so !important styles are overridden
+    w.style.top = "0px";
+    w.style.left = "0px";
     w.style.width = "100vw";
     w.style.height = "100vh";
   }
 }
-
- 
 
 function showContextMenu(x, y) {
   contextMenu.style.top = y + 'px';
