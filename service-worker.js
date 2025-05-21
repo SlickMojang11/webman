@@ -5,8 +5,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
       cache.addAll([
-        OFFLINE_PAGE,
-        "offline.png"
+        OFFLINE_PAGE
       ])
     )
   );
