@@ -1048,7 +1048,7 @@ function updateTaskbar() {
 
   for (const [id, el] of minimized) {
   const name = el.querySelector(".title")?.textContent || "File";
-
+	}
   const icon = document.createElement("div");
   icon.className = "task-icon";
   icon.dataset.name = name;
