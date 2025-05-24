@@ -1010,6 +1010,29 @@ function minimizeWindow(id) {
     updateTaskbar();
   }
 }
+function showTaskbarContextMenu(x, y, id) {
+  const menu = document.getElementById("taskbarContextMenu");
+  menu.innerHTML = `
+    <button onclick="restoreFromTaskbar('${id}')">🗖 Restore</button>
+    <button onclick="minimizeWindow('${id}')">🗕 Minimize</button>
+    <button onclick="closeWindow('${id}')">✖ Close</button>
+  `;
+  menu.style.top = y + "px";
+  menu.style.left = x + "px";
+  menu.style.display = "flex";
+}
+
+document.addEventListener("click", () => {
+  document.getElementById("taskbarContextMenu").style.display = "none";
+});
+
+function restoreFromTaskbar(id) {
+  const win = windows[id];
+  if (win) {
+    win.style.display = "block";
+    updateTaskbar();
+  }
+}
 
 function updateTaskbar() {
   const minimized = Object.entries(windows).filter(([_, el]) => el.style.display === "none");
@@ -1024,19 +1047,24 @@ function updateTaskbar() {
   taskbar.innerHTML = "";
 
   for (const [id, el] of minimized) {
-    const name = el.querySelector(".title")?.textContent || "File";
+  const name = el.querySelector(".title")?.textContent || "File";
 
-    const icon = document.createElement("div");
-    icon.className = "task-icon";
-    icon.dataset.name = name;
-    icon.textContent = "📄";
-    icon.onclick = () => {
-      el.style.display = "block";
-      updateTaskbar();
-    };
+  const icon = document.createElement("div");
+  icon.className = "task-icon";
+  icon.dataset.name = name;
+  icon.textContent = "📄";
 
-    taskbar.appendChild(icon);
-  }
+  icon.onclick = () => {
+    el.style.display = "block";
+    updateTaskbar();
+  };
+
+  icon.oncontextmenu = (e) => {
+    e.preventDefault();
+    showTaskbarContextMenu(e.pageX, e.pageY, id);
+  };
+
+  taskbar.appendChild(icon);
 }
 
 function toggleFullscreen(id, forceFull = false) {
@@ -1278,5 +1306,7 @@ async function checkForUpdate() {
   <button onclick="location.reload()" style="background:var(--accent);color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">Refresh</button>
   <button onclick="dismissUpdateNotice()">×</button>
 	</div>
+<div id="taskbarContextMenu" class="context-menu" style="display: none;"></div>
+
 </body>
 </html>
