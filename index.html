@@ -1046,18 +1046,27 @@ function updateTaskbar() {
   taskbar.style.display = "flex";
   taskbar.innerHTML = "";
 
-  for (const [id, el] of minimized) {
-  const name = el.querySelector(".title")?.textContent || "File";
-	}
-  const icon = document.createElement("div");
-  icon.className = "task-icon";
-  icon.dataset.name = name;
-  icon.textContent = "📄";
+  for (const [id, el] of Object.entries(windows)) {
+  if (el.style.display === "none") {
+    const icon = document.createElement("div");
+    icon.className = "task-icon";
+    icon.dataset.name = el.querySelector(".title")?.textContent || "File";
+    icon.textContent = "📄";
 
-  icon.onclick = () => {
-    el.style.display = "block";
-    updateTaskbar();
-  };
+    icon.onclick = () => {
+      el.style.display = "block";
+      updateTaskbar();
+    };
+
+    icon.oncontextmenu = (e) => {
+      e.preventDefault();
+      showTaskbarContextMenu(e.pageX, e.pageY, id);
+    };
+
+    taskbar.appendChild(icon);
+  }
+}
+
 
   icon.oncontextmenu = (e) => {
     e.preventDefault();
