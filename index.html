@@ -1067,15 +1067,6 @@ function updateTaskbar() {
   }
 }
 
-
-  icon.oncontextmenu = (e) => {
-    e.preventDefault();
-    showTaskbarContextMenu(e.pageX, e.pageY, id);
-  };
-
-  taskbar.appendChild(icon);
-}
-
 function toggleFullscreen(id, forceFull = false) {
   const w = windows[id];
   if (!w) return;
