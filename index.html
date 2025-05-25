@@ -755,7 +755,7 @@ async function fetchTree() {
   document.body.appendChild(testSpan);
   const baseWidth = testSpan.offsetWidth;
 
-  testSpan.style.fontFamily = '"Segoe UI", sans-serif';
+  testSpan.style.fontFamily = '"Roboto", sans-serif';
 
   requestAnimationFrame(() => {
     const testWidth = testSpan.offsetWidth;
@@ -764,8 +764,8 @@ async function fetchTree() {
     if (testWidth !== baseWidth) {
       console.log("Segoe UI is present.");
     } else {
-      console.warn("Segoe UI not rendered. Falling back.");
-      showStatus("Segoe UI font not available. Falling back to system font.");
+      console.warn("Roboto not rendered. Falling back.");
+      showStatus("Roboto font not available. Falling back to system font.");
     }
 
     resolve(); // Always resolve — don't block the splash or file loading
