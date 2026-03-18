@@ -40,11 +40,6 @@
     },
     {
       "type": "file",
-      "name": "index-1.html",
-      "path": "index-1.html"
-    },
-    {
-      "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
     },
