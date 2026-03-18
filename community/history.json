@@ -1,0 +1,13 @@
+{
+  "posts": [
+    {
+      "id": "mmw4p434r8wp",
+      "author": "John Doe",
+      "role": "user",
+      "authorCode": "",
+      "body": "This is a comment",
+      "createdAt": "2026-03-18T14:20:29.296Z",
+      "replies": []
+    }
+  ]
+}
