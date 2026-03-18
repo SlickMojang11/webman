@@ -11,11 +11,6 @@
       "type": "file",
       "name": "admins.json",
       "path": "admins.json"
-    },
-    {
-      "type": "file",
-      "name": "index.html.old",
-      "path": "index.html.old"
     }
   ]
 }
