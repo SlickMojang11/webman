@@ -8,6 +8,27 @@
       "path": "README.md"
     },
     {
+      "type": "folder",
+      "name": "community",
+      "children": [
+        {
+          "type": "file",
+          "name": "community.css",
+          "path": "community/community.css"
+        },
+        {
+          "type": "file",
+          "name": "community.html",
+          "path": "community/community.html"
+        },
+        {
+          "type": "file",
+          "name": "community.js",
+          "path": "community/community.js"
+        }
+      ]
+    },
+    {
       "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
