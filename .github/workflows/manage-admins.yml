@@ -1,0 +1,122 @@
+name: Manage Admin Codes
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - add
+          - remove
+      code:
+        description: '6-character admin code (A-Z, 0-9). Leave blank on "add" to auto-generate.'
+        required: false
+      permissions:
+        description: 'Comma-separated permissions for "add": create, delete, modify, approve'
+        required: false
+        default: 'create,approve'
+      name:
+        description: 'Display name for this admin (optional, "add" only)'
+        required: false
+        default: 'Admin'
+
+jobs:
+  manage-admins:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate and apply change
+        run: |
+          python3 - <<'PYEOF'
+          import json, sys, random, string, os
+
+          ACTION      = "${{ inputs.action }}"
+          CODE_INPUT  = "${{ inputs.code }}".strip().upper()
+          PERMISSIONS = [p.strip() for p in "${{ inputs.permissions }}".split(',') if p.strip()]
+          NAME        = "${{ inputs.name }}".strip() or "Admin"
+          SUPER_CODE  = "H7CXF9"
+
+          ADMINS_FILE = "admins.json"
+
+          # Load existing file
+          if os.path.exists(ADMINS_FILE):
+              with open(ADMINS_FILE) as f:
+                  data = json.load(f)
+          else:
+              data = {"admins": []}
+
+          admins = data.get("admins", [])
+          existing_codes = {a["code"] for a in admins}
+
+          if ACTION == "add":
+              # Generate code if not provided
+              if CODE_INPUT:
+                  code = CODE_INPUT
+              else:
+                  chars = string.ascii_uppercase + string.digits
+                  while True:
+                      code = "".join(random.choices(chars, k=6))
+                      if code != SUPER_CODE and code not in existing_codes:
+                          break
+
+              # Validate
+              if len(code) != 6 or not code.isalnum():
+                  print(f"ERROR: Code '{code}' must be exactly 6 alphanumeric characters.")
+                  sys.exit(1)
+              if code == SUPER_CODE:
+                  print(f"ERROR: Code '{code}' is reserved for the super admin.")
+                  sys.exit(1)
+
+              valid_perms = {"create", "delete", "modify", "approve"}
+              bad_perms = [p for p in PERMISSIONS if p not in valid_perms]
+              if bad_perms:
+                  print(f"ERROR: Unknown permissions: {bad_perms}. Valid: {sorted(valid_perms)}")
+                  sys.exit(1)
+
+              # Remove existing entry with same code (upsert)
+              admins = [a for a in admins if a["code"] != code]
+              admins.append({"code": code, "permissions": PERMISSIONS, "name": NAME})
+              print(f"✓ Admin code '{code}' added with permissions: {PERMISSIONS}")
+
+          elif ACTION == "remove":
+              if not CODE_INPUT:
+                  print("ERROR: A code is required for the 'remove' action.")
+                  sys.exit(1)
+              before = len(admins)
+              admins = [a for a in admins if a["code"] != CODE_INPUT]
+              if len(admins) == before:
+                  print(f"WARNING: Code '{CODE_INPUT}' was not found — nothing changed.")
+              else:
+                  print(f"✓ Admin code '{CODE_INPUT}' removed.")
+
+          else:
+              print(f"ERROR: Unknown action '{ACTION}'.")
+              sys.exit(1)
+
+          data["admins"] = admins
+          with open(ADMINS_FILE, "w") as f:
+              json.dump(data, f, indent=2)
+              f.write("\n")
+
+          print(f"✓ admins.json updated. Total admin codes: {len(admins)}")
+          PYEOF
+
+      - name: Commit updated admins.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add admins.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update admin codes via workflow dispatch"
+            git push
+            echo "✓ admins.json pushed to repository."
+          fi
