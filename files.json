@@ -25,6 +25,11 @@
           "type": "file",
           "name": "community.js",
           "path": "community/community.js"
+        },
+        {
+          "type": "file",
+          "name": "history.json",
+          "path": "community/history.json"
         }
       ]
     },
