@@ -16,11 +16,6 @@
       "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
-    },
-    {
-      "type": "file",
-      "name": "manage-admins.yml",
-      "path": "manage-admins.yml"
     }
   ]
 }
