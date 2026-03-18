@@ -23,6 +23,11 @@
         },
         {
           "type": "file",
+          "name": "community.js",
+          "path": "community/community.js"
+        },
+        {
+          "type": "file",
           "name": "community.js.old",
           "path": "community/community.js.old"
         },
