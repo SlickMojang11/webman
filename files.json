@@ -37,6 +37,22 @@
       "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
+    },
+    {
+      "type": "folder",
+      "name": "waiting-list",
+      "children": [
+        {
+          "type": "file",
+          "name": "admins.json",
+          "path": "waiting-list/admins.json"
+        },
+        {
+          "type": "file",
+          "name": "admins.json.meta.json",
+          "path": "waiting-list/admins.json.meta.json"
+        }
+      ]
     }
   ]
 }
