@@ -8,7 +8,6 @@
   <meta name="theme-color" content="#1e1e1e">
   <link rel="icon" href="favicon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
     :root {
@@ -384,7 +383,7 @@
       border-left: 4px solid var(--accent);
       margin-left: 0;
       padding-left: 1em;
-      opacity: 0.85;
+      color: rgba(var(--fg), 0.8);
     }
     
     .markdown-content table {
@@ -588,108 +587,10 @@
         border-radius: 0;
       }
     }
-    /* GitHub Pages → Vercel suggestion popup */
-    #vercelPopup {
-      position: fixed;
-      inset: 0;
-      z-index: 100000;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 32px;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-    }
-    #vercelPopup.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-    #vercelPopupCard {
-      background: var(--item);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px 24px 20px;
-      max-width: 360px;
-      width: calc(100% - 48px);
-      text-align: center;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.35);
-      transform: translateY(48px);
-      transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
-    }
-    #vercelPopup.visible #vercelPopupCard {
-      transform: translateY(0);
-    }
-    #vercelPopupIcon {
-      font-size: 36px;
-      margin-bottom: 12px;
-      line-height: 1;
-    }
-    #vercelPopupCard h2 {
-      font-size: 17px;
-      font-weight: 700;
-      margin: 0 0 8px;
-      color: var(--fg);
-    }
-    #vercelPopupCard p {
-      font-size: 14px;
-      color: var(--fg);
-      opacity: 0.7;
-      margin: 0 0 20px;
-      line-height: 1.5;
-    }
-    #vercelPopupButtons {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    #vercelPopupGo {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 13px 20px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: opacity 0.2s;
-      font-family: "Roboto", sans-serif;
-    }
-    #vercelPopupGo:hover { opacity: 0.88; }
-    #vercelPopupLater {
-      background: none;
-      border: none;
-      color: var(--fg);
-      opacity: 0.55;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 8px;
-      width: 100%;
-      font-family: "Roboto", sans-serif;
-      transition: opacity 0.2s;
-    }
-    #vercelPopupLater:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
   <div id="splash"><img src="favicon.png" alt="Loading..." /></div>
-
-  <!-- GitHub Pages → Vercel redirect popup -->
-  <div id="vercelPopup">
-    <div id="vercelPopupCard">
-      <div id="vercelPopupIcon">⚡</div>
-      <h2>A better experience awaits</h2>
-      <p>You're on GitHub Pages. The Vercel version loads faster, is more reliable, and always stays up to date.</p>
-      <div id="vercelPopupButtons">
-        <button id="vercelPopupGo" onclick="goToVercel()">Let's Go →</button>
-        <button id="vercelPopupLater" onclick="dismissVercelPopup()">Later</button>
-      </div>
-    </div>
-  </div>
 
   <div class="window">
     <div class="toolbar">
@@ -741,7 +642,6 @@ let selected = null;
 let previewId = 0;
 const windows = {};
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-let updateDismissed = false;
 
 const EXCLUDED_ROOT_FILES = [
   "fmtree.py", "files.json", "index.html", "favicon.png", "tree.py", "autocommit.ps1"
@@ -862,7 +762,7 @@ async function fetchTree() {
     document.body.removeChild(testSpan);
 
     if (testWidth !== baseWidth) {
-      console.log("Roboto is present.");
+      console.log("Segoe UI is present.");
     } else {
       console.warn("Roboto not rendered. Falling back.");
       showStatus("Roboto font not available. Falling back to system font.");
@@ -896,9 +796,6 @@ async function fetchTree() {
   } catch (error) {
     showStatus("Failed to generate tree: " + error.message);
     console.error(error);
-    // Ensure splash is always dismissed even on fatal error
-    splash.style.opacity = 0;
-    setTimeout(() => { splash.style.display = 'none'; }, 600);
   }
 }
 
@@ -932,8 +829,8 @@ function renderFolder(node) {
   const children = (node.children || []).filter(item => {
     // Exclude .github/ folder
     if (item.type === "folder" && item.name === ".github") return false;
-    // Fix #6: exclude system files only at root level (pathHistory empty = we are at root)
-    if (pathHistory.length === 0 && item.type === "file" && EXCLUDED_ROOT_FILES.includes(item.name)) return false;
+    // Exclude specific root files
+    if (node.name === "notebooks" && item.type === "file" && EXCLUDED_ROOT_FILES.includes(item.name)) return false;
     return true;
   });
   
@@ -961,8 +858,6 @@ function renderFolder(node) {
     const item = document.createElement("div");
     item.className = "file-item";
     item.setAttribute("data-index", i);
-    // Fix #4 prep: store child reference so downloadFile can access it directly
-    item._childData = child;
     
     const fileIcon = getFileIcon(child);
     const fileTypeClass = getFileTypeClass(child);
@@ -1085,8 +980,8 @@ function previewFile(e, index) {
   e.stopPropagation();
   const items = document.querySelectorAll('.file-item');
   if (index >= 0 && index < items.length) {
-    // item.click() sets selected AND opens preview via its own onclick handler
     items[index].click();
+    handlePreview();
   }
 }
 
@@ -1094,10 +989,7 @@ function downloadFile(e, index) {
   e.stopPropagation();
   const items = document.querySelectorAll('.file-item');
   if (index >= 0 && index < items.length) {
-    // Fix #4: set selection directly using stored _childData — no click() to avoid opening a preview
-    document.querySelectorAll('.file-item.selected').forEach(el => el.classList.remove('selected'));
-    items[index].classList.add('selected');
-    selected = items[index]._childData;
+    items[index].click();
     handleDownload();
   }
 }
@@ -1348,37 +1240,14 @@ const manifest = {
   ]
 };
 
-// Fix #8: manifest.json is already declared in <head> via static <link rel="manifest">.
-// The dynamic blob manifest below was a duplicate and has been removed.
-
-// --- GitHub Pages → Vercel popup ---
-function hasVercelDismissCookie() {
-  return document.cookie.split(';').some(c => c.trim().startsWith('vercel_redirect_dismissed=1'));
-}
-
-function goToVercel() {
-  document.cookie = 'vercel_redirect_dismissed=1; max-age=31536000; path=/; SameSite=Lax';
-  window.location.href = 'https://webman-taupe.vercel.app';
-}
-
-function dismissVercelPopup() {
-  document.cookie = 'vercel_redirect_dismissed=1; max-age=31536000; path=/; SameSite=Lax';
-  const popup = document.getElementById('vercelPopup');
-  popup.classList.remove('visible');
-  setTimeout(() => { popup.style.display = 'none'; }, 400);
-}
-
-function maybeShowVercelPopup() {
-  if (hasVercelDismissCookie()) return;
-  if (window.location.hostname === 'slickmojang11.github.io') {
-    setTimeout(() => {
-      document.getElementById('vercelPopup').classList.add('visible');
-    }, 1800);
-  }
-}
+const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+const manifestURL = URL.createObjectURL(blob);
+const link = document.createElement("link");
+link.rel = "manifest";
+link.href = manifestURL;
+document.head.appendChild(link);
 
 window.addEventListener("DOMContentLoaded", fetchTree);
-window.addEventListener("DOMContentLoaded", maybeShowVercelPopup);
 
 
 				     
@@ -1431,7 +1300,8 @@ async function checkForUpdate() {
 
 
 </script>
-<div id="updateNotice" style="display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--item); color: var(--fg); padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 9999; align-items: center; gap: 12px;">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<div id="updateNotice" style="display: none !important; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--item); color: var(--fg); padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 9999; align-items: center; gap: 12px;">
   <span>Update detected. Refresh now to apply changes.</span>
   <button onclick="location.reload()" style="background:var(--accent);color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">Refresh</button>
   <button onclick="dismissUpdateNotice()">×</button>
