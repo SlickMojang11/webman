@@ -10,7 +10,9 @@ EXCLUDED_ROOT_FILES = {
     "service-worker.js",
     "offline.html",
     "offline.png",
-    "admins.json"
+    "admins.json",
+    "community",
+    "waiting-list"
 }
 
 def build_tree(path, rel_path=""):
