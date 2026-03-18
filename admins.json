@@ -1,3 +1,14 @@
 {
-  "admins": []
+  "admins": [
+    {
+      "code": "AAAAAA",
+      "permissions": [
+        "create",
+        "delete",
+        "modify",
+        "approve"
+      ],
+      "name": "Admin"
+    }
+  ]
 }
