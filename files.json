@@ -8,56 +8,14 @@
       "path": "README.md"
     },
     {
-      "type": "folder",
-      "name": "community",
-      "children": [
-        {
-          "type": "file",
-          "name": "community.HTML",
-          "path": "community/community.HTML"
-        },
-        {
-          "type": "file",
-          "name": "community.css",
-          "path": "community/community.css"
-        },
-        {
-          "type": "file",
-          "name": "community.html.old",
-          "path": "community/community.html.old"
-        },
-        {
-          "type": "file",
-          "name": "community.js",
-          "path": "community/community.js"
-        },
-        {
-          "type": "file",
-          "name": "community.js.old",
-          "path": "community/community.js.old"
-        },
-        {
-          "type": "file",
-          "name": "history.json",
-          "path": "community/history.json"
-        }
-      ]
+      "type": "file",
+      "name": "fmtree.py.old",
+      "path": "fmtree.py.old"
     },
     {
       "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
-    },
-    {
-      "type": "folder",
-      "name": "waiting-list",
-      "children": [
-        {
-          "type": "file",
-          "name": "admins.json",
-          "path": "waiting-list/admins.json"
-        }
-      ]
     }
   ]
 }
