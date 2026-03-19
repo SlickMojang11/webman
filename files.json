@@ -16,6 +16,11 @@
       "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
+    },
+    {
+      "type": "file",
+      "name": "service-worker.js.old",
+      "path": "service-worker.js.old"
     }
   ]
 }
