@@ -18,8 +18,8 @@
         },
         {
           "type": "file",
-          "name": "community.html",
-          "path": "community/community.html"
+          "name": "community.html.old",
+          "path": "community/community.html.old"
         },
         {
           "type": "file",
