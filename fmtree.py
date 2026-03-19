@@ -10,16 +10,12 @@ EXCLUDED_ROOT_FILES = {
     "service-worker.js",
     "offline.html",
     "offline.png",
-    "admins.json",
-    "community",
-    "waiting-list"
+    "admins.json"
 }
 
 EXCLUDED_ROOT_DIRS = {
-    "node_modules",
-    ".git",
-    "dist",
-    "build",
+    "community",
+    "waiting-list"
 }
 
 def build_tree(path, rel_path=""):
