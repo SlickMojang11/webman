@@ -1,0 +1,74 @@
+# ============================================================
+# delete-file.yml
+# Triggered via repository_dispatch when an admin deletes a
+# file through the WebMan UI.  Removes the file and
+# regenerates files.json.
+#
+# Place at:  .github/workflows/delete-file.yml
+#
+# Required secret:  WEBMAN_PAT
+# ============================================================
+name: Delete File
+
+on:
+  repository_dispatch:
+    types: [delete-file]
+  workflow_dispatch:
+    inputs:
+      file_path:
+        description: 'Repo-relative path of file to delete (e.g. docs/old.pdf)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WEBMAN_PAT }}
+          fetch-depth: 0
+
+      - name: Resolve path
+        id: inputs
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "path=${{ github.event.client_payload.file_path }}" >> $GITHUB_OUTPUT
+          else
+            echo "path=${{ inputs.file_path }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Delete file
+        run: |
+          FILE="${{ steps.inputs.outputs.path }}"
+          if [ ! -f "$FILE" ]; then
+            echo "WARNING: File not found (may already be deleted): $FILE"
+          else
+            rm -f "$FILE"
+            echo "Deleted: $FILE"
+          fi
+          # Also remove parent folder if now empty (except root)
+          DIR=$(dirname "$FILE")
+          if [ "$DIR" != "." ] && [ -d "$DIR" ] && [ -z "$(ls -A "$DIR")" ]; then
+            rmdir "$DIR"
+            echo "Removed empty folder: $DIR"
+          fi
+
+      - name: Regenerate file tree
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run fmtree.py
+        run: python fmtree.py
+
+      - name: Commit deletion
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name  "github-actions[bot]"
+          git add -A
+          git diff --staged --quiet || git commit -m "chore: delete ${{ steps.inputs.outputs.path }} [skip ci]"
+          git push
