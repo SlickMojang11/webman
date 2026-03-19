@@ -1,11 +1,49 @@
 {
   "type": "folder",
   "name": "webman",
+  "path": "",
   "children": [
     {
       "type": "file",
       "name": "README.md",
       "path": "README.md"
+    },
+    {
+      "type": "folder",
+      "name": "community",
+      "path": "community",
+      "children": [
+        {
+          "type": "file",
+          "name": "community.HTML",
+          "path": "community/community.HTML"
+        },
+        {
+          "type": "file",
+          "name": "community.css",
+          "path": "community/community.css"
+        },
+        {
+          "type": "file",
+          "name": "community.html.old",
+          "path": "community/community.html.old"
+        },
+        {
+          "type": "file",
+          "name": "community.js",
+          "path": "community/community.js"
+        },
+        {
+          "type": "file",
+          "name": "community.js.old",
+          "path": "community/community.js.old"
+        },
+        {
+          "type": "file",
+          "name": "history.json",
+          "path": "community/history.json"
+        }
+      ]
     },
     {
       "type": "file",
@@ -21,6 +59,18 @@
       "type": "file",
       "name": "service-worker.js.old",
       "path": "service-worker.js.old"
+    },
+    {
+      "type": "folder",
+      "name": "waiting-list",
+      "path": "waiting-list",
+      "children": [
+        {
+          "type": "file",
+          "name": "admins.json",
+          "path": "waiting-list/admins.json"
+        }
+      ]
     }
   ]
 }
