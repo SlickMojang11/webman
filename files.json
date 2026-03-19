@@ -9,11 +9,6 @@
     },
     {
       "type": "file",
-      "name": "community.html.txt",
-      "path": "community.html.txt"
-    },
-    {
-      "type": "file",
       "name": "fmtree.py.old.000",
       "path": "fmtree.py.old.000"
     },
@@ -21,6 +16,11 @@
       "type": "file",
       "name": "fmtree.py.old.001",
       "path": "fmtree.py.old.001"
+    },
+    {
+      "type": "file",
+      "name": "forum.html",
+      "path": "forum.html"
     },
     {
       "type": "file",
