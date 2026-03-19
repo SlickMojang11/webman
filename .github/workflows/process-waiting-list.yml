@@ -1,0 +1,86 @@
+# ============================================================
+# process-waiting-list.yml
+# Triggered via repository_dispatch from the web app when an
+# admin approves a pending upload.  Moves the file from
+# waiting-list/ to its approved destination folder, then
+# regenerates files.json.
+#
+# Place at:  .github/workflows/process-waiting-list.yml
+#
+# Required secret:  WEBMAN_PAT  (a fine-grained PAT with
+#   Contents: Read & Write permission for this repo)
+# ============================================================
+name: Process Waiting-List Upload
+
+on:
+  repository_dispatch:
+    types: [approve-upload]
+  workflow_dispatch:
+    inputs:
+      source_path:
+        description: 'Path inside waiting-list/ (e.g. waiting-list/report.pdf)'
+        required: true
+      dest_folder:
+        description: 'Destination folder in repo (leave blank for root)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  move-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WEBMAN_PAT }}
+          fetch-depth: 0
+
+      - name: Resolve inputs
+        id: inputs
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "source=${{ github.event.client_payload.source_path }}" >> $GITHUB_OUTPUT
+            echo "dest=${{ github.event.client_payload.dest_folder }}"   >> $GITHUB_OUTPUT
+          else
+            echo "source=${{ inputs.source_path }}" >> $GITHUB_OUTPUT
+            echo "dest=${{ inputs.dest_folder }}"   >> $GITHUB_OUTPUT
+          fi
+
+      - name: Move file to destination
+        run: |
+          SOURCE="${{ steps.inputs.outputs.source }}"
+          DEST_DIR="${{ steps.inputs.outputs.dest }}"
+          FILENAME=$(basename "$SOURCE")
+
+          if [ ! -f "$SOURCE" ]; then
+            echo "ERROR: Source file not found: $SOURCE"
+            exit 1
+          fi
+
+          if [ -n "$DEST_DIR" ]; then
+            mkdir -p "$DEST_DIR"
+            mv "$SOURCE" "$DEST_DIR/$FILENAME"
+            echo "Moved $SOURCE → $DEST_DIR/$FILENAME"
+          else
+            mv "$SOURCE" "$FILENAME"
+            echo "Moved $SOURCE → (root)/$FILENAME"
+          fi
+
+      - name: Set up Python & regenerate tree
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run fmtree.py
+        run: python fmtree.py
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name  "github-actions[bot]"
+          git add -A
+          git diff --staged --quiet || git commit -m "feat: approve upload — ${{ steps.inputs.outputs.source }} [skip ci]"
+          git push
