@@ -1,7 +1,6 @@
 {
   "type": "folder",
   "name": "webman",
-  "path": "",
   "children": [
     {
       "type": "file",
@@ -11,7 +10,6 @@
     {
       "type": "folder",
       "name": "community",
-      "path": "community",
       "children": [
         {
           "type": "file",
@@ -47,8 +45,8 @@
     },
     {
       "type": "file",
-      "name": "fmtree.py.old",
-      "path": "fmtree.py.old"
+      "name": "fmtree.py.old.001",
+      "path": "fmtree.py.old.001"
     },
     {
       "type": "file",
@@ -63,7 +61,6 @@
     {
       "type": "folder",
       "name": "waiting-list",
-      "path": "waiting-list",
       "children": [
         {
           "type": "file",
