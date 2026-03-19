@@ -9,6 +9,11 @@
     },
     {
       "type": "file",
+      "name": "community.html.txt",
+      "path": "community.html.txt"
+    },
+    {
+      "type": "file",
       "name": "fmtree.py.old.000",
       "path": "fmtree.py.old.000"
     },
