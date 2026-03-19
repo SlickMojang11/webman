@@ -1,0 +1,44 @@
+# ============================================================
+# generate-tree.yml
+# Runs fmtree.py after any push to main (except files.json
+# itself) to keep files.json always up-to-date.
+# Place this file at:  .github/workflows/generate-tree.yml
+# ============================================================
+name: Generate File Tree
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'files.json'          # don't re-run when only files.json changed
+      - '.github/**'
+  workflow_dispatch:          # allow manual trigger from GitHub UI
+
+permissions:
+  contents: write             # needed to commit files.json back
+
+jobs:
+  build-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run fmtree.py
+        run: python fmtree.py
+
+      - name: Commit updated files.json
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name  "github-actions[bot]"
+          git add files.json
+          # Only commit if files.json actually changed
+          git diff --staged --quiet || git commit -m "chore: regenerate files.json [skip ci]"
+          git push
