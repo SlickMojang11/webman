@@ -13,6 +13,11 @@
       "children": [
         {
           "type": "file",
+          "name": "community.HTML",
+          "path": "community/community.HTML"
+        },
+        {
+          "type": "file",
           "name": "community.css",
           "path": "community/community.css"
         },
