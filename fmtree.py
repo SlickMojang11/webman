@@ -15,7 +15,8 @@ EXCLUDED_ROOT_FILES = {
 
 EXCLUDED_ROOT_DIRS = {
     "community",
-    "waiting-list"
+    "waiting-list",
+    "api"
 }
 
 def build_tree(path, rel_path=""):
