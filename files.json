@@ -22,11 +22,6 @@
       "type": "file",
       "name": "reference-index-page.html",
       "path": "reference-index-page.html"
-    },
-    {
-      "type": "file",
-      "name": "service-worker.js.old",
-      "path": "service-worker.js.old"
     }
   ]
 }
