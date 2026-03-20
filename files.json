@@ -27,11 +27,6 @@
       "type": "file",
       "name": "service-worker.js.old",
       "path": "service-worker.js.old"
-    },
-    {
-      "type": "file",
-      "name": "wm-config.json",
-      "path": "wm-config.json"
     }
   ]
 }
