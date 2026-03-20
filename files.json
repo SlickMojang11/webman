@@ -8,6 +8,11 @@
       "path": "README.md"
     },
     {
+      "type": "folder",
+      "name": "api",
+      "children": []
+    },
+    {
       "type": "file",
       "name": "fmtree.py.old.000",
       "path": "fmtree.py.old.000"
