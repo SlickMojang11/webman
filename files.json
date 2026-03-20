@@ -20,18 +20,8 @@
     },
     {
       "type": "file",
-      "name": "forum.html",
-      "path": "forum.html"
-    },
-    {
-      "type": "file",
       "name": "index.html.old",
       "path": "index.html.old"
-    },
-    {
-      "type": "file",
-      "name": "index.html.old.01",
-      "path": "index.html.old.01"
     },
     {
       "type": "file",
