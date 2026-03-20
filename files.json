@@ -20,11 +20,6 @@
     },
     {
       "type": "file",
-      "name": "index.html.old",
-      "path": "index.html.old"
-    },
-    {
-      "type": "file",
       "name": "reference-index-page.html",
       "path": "reference-index-page.html"
     },
