@@ -8,17 +8,6 @@
       "path": "README.md"
     },
     {
-      "type": "folder",
-      "name": "api",
-      "children": [
-        {
-          "type": "file",
-          "name": "gh.js",
-          "path": "api/gh.js"
-        }
-      ]
-    },
-    {
       "type": "file",
       "name": "reference-index-page.html",
       "path": "reference-index-page.html"
