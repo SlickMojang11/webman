@@ -10,7 +10,13 @@
     {
       "type": "folder",
       "name": "api",
-      "children": []
+      "children": [
+        {
+          "type": "file",
+          "name": "gh.js",
+          "path": "api/gh.js"
+        }
+      ]
     },
     {
       "type": "file",
