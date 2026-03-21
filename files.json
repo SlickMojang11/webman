@@ -6,6 +6,17 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md"
+    },
+    {
+      "type": "folder",
+      "name": "test",
+      "children": [
+        {
+          "type": "file",
+          "name": "sample.pdf",
+          "path": "test/sample.pdf"
+        }
+      ]
     }
   ]
 }
