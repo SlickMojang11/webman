@@ -23,6 +23,11 @@
         },
         {
           "type": "file",
+          "name": "file-sample_100kB.docx",
+          "path": "test-folder/file-sample_100kB.docx"
+        },
+        {
+          "type": "file",
           "name": "file_example_PPT_250kB.ppt",
           "path": "test-folder/file_example_PPT_250kB.ppt"
         },
