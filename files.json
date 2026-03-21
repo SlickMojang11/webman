@@ -11,32 +11,6 @@
       "type": "file",
       "name": "reference-index-page.html",
       "path": "reference-index-page.html"
-    },
-    {
-      "type": "folder",
-      "name": "test-folder",
-      "children": [
-        {
-          "type": "file",
-          "name": "file-sample_100kB.doc",
-          "path": "test-folder/file-sample_100kB.doc"
-        },
-        {
-          "type": "file",
-          "name": "file-sample_100kB.docx",
-          "path": "test-folder/file-sample_100kB.docx"
-        },
-        {
-          "type": "file",
-          "name": "file_example_PPT_250kB.ppt",
-          "path": "test-folder/file_example_PPT_250kB.ppt"
-        },
-        {
-          "type": "file",
-          "name": "sample.pdf",
-          "path": "test-folder/sample.pdf"
-        }
-      ]
     }
   ]
 }
