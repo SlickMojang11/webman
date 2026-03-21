@@ -18,6 +18,11 @@
       "children": [
         {
           "type": "file",
+          "name": "file-sample_100kB.doc",
+          "path": "test-folder/file-sample_100kB.doc"
+        },
+        {
+          "type": "file",
           "name": "sample.pdf",
           "path": "test-folder/sample.pdf"
         }
